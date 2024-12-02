@@ -1074,7 +1074,7 @@ static void dwc3_core_setup_global_control(struct dwc3 *dwc)
 	/* check if current dwc3 is on simulation board */
 	if (dwc->hwparams.hwparams6 & DWC3_GHWPARAMS6_EN_FPGA) {
 		dev_info(dwc->dev, "Running with FPGA optimizations\n");
-		dwc->is_fpga = true
+		dwc->is_fpga = true;
 	}
 
 	WARN_ONCE(dwc->disable_scramble_quirk && !dwc->is_fpga,
