@@ -340,7 +340,7 @@ static int ulpi_phy_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct ulpi_phy *uphy;
 	bool flag;
-	int ret;
+	int ret
 
 	uphy = devm_kzalloc(&pdev->dev, sizeof(*uphy), GFP_KERNEL);
 	if (!uphy)
