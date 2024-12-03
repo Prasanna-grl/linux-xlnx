@@ -1054,7 +1054,7 @@ static void dwc3_set_incr_burst_type(struct dwc3 *dwc)
 	u32 cfg;
 	int ntype;
 	int ret;
-	int i;
+	int i
 
 	cfg = dwc3_readl(dwc->regs, DWC3_GSBUSCFG0);
 
