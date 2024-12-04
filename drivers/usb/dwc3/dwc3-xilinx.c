@@ -622,6 +622,8 @@ static int dwc3_xlnx_probe(struct platform_device *pdev)
 	const char                      *dr_modes;
 	unsigned long			irq_flags;
 
+	pr_info("GRL : %s Log \n", __FUNCTION__);
+
 	priv_data = devm_kzalloc(dev, sizeof(*priv_data), GFP_KERNEL);
 	if (!priv_data)
 		return -ENOMEM;
@@ -649,6 +651,8 @@ static int dwc3_xlnx_probe(struct platform_device *pdev)
 		priv_data->dr_mode = USB_DR_MODE_UNKNOWN;
 	else
 		priv_data->dr_mode = usb_get_dr_mode_from_string(dr_modes);
+
+		pr_info("GRL : %s dr_mode = %d\n", __FUNCTION__, priv_data->dr_mode);
 
 	/* get the IRQ from the dwc3-xilinx core */
 	if (of_device_is_compatible(np, "xlnx,versal-dwc3") &&

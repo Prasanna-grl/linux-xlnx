@@ -215,6 +215,10 @@ static int ulpi_set_host(struct usb_otg *otg, struct usb_bus *host)
 	struct usb_phy *phy = otg->usb_phy;
 	unsigned int flags = usb_phy_io_read(phy, ULPI_IFC_CTRL);
 
+	pr_info("GRL : %s ULPI_IFC_CTRL flag status = %d\n", __FUNCTION__, flags);
+
+	pr_info("GRL : %s host mode = %d\n", __FUNCTION__, host);
+
 	if (!host) {
 		otg->host = NULL;
 		return 0;
@@ -243,6 +247,8 @@ static int ulpi_set_vbus(struct usb_otg *otg, bool on)
 
 	flags &= ~(ULPI_OTG_CTRL_DRVVBUS | ULPI_OTG_CTRL_DRVVBUS_EXT);
 
+	pr_info("GRL : %s ULPI_OTG_CTRL flag status = %d\n", __FUNCTION__, flags);
+
 	if (on) {
 		if (phy->flags & ULPI_OTG_DRVVBUS)
 			flags |= ULPI_OTG_CTRL_DRVVBUS;
@@ -259,6 +265,8 @@ static int usbphy_set_vbus(struct usb_phy *phy, int on)
 	unsigned int flags = usb_phy_io_read(phy, ULPI_OTG_CTRL);
 
 	flags &= ~(ULPI_OTG_CTRL_DRVVBUS | ULPI_OTG_CTRL_DRVVBUS_EXT);
+
+	pr_info("GRL : %s ULPI_OTG_CTRL flag status = %d\n", __FUNCTION__, flags);
 
 	if (on) {
 		if (phy->flags & ULPI_OTG_DRVVBUS)
@@ -342,6 +350,10 @@ static int ulpi_phy_probe(struct platform_device *pdev)
 	bool flag;
 	int ret;
 
+	dev_info(&pdev->dev, "GRL : Log %s\n", __FUNCTION__);
+
+	dev_err(&pdev->dev, "GRL : Log %s\n", __FUNCTION__);
+
 	uphy = devm_kzalloc(&pdev->dev, sizeof(*uphy), GFP_KERNEL);
 	if (!uphy)
 		return -ENOMEM;
@@ -370,6 +382,7 @@ static int ulpi_phy_probe(struct platform_device *pdev)
 	}
 
 	flag = of_property_read_bool(np, "drv-vbus");
+	dev_info(&pdev->dev, "GRL : drv-vbus flag status = %d %s\n", flag, __FUNCTION__);
 	if (flag)
 		uphy->flags |= ULPI_OTG_DRVVBUS | ULPI_OTG_DRVVBUS_EXT;
 
