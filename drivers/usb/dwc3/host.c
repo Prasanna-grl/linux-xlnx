@@ -20,6 +20,7 @@ void dwc3_host_wakeup_register(dwc3_wakeup_t func)
 {
 	dwc3_wakeup_fn = func;
 }
+EXPORT_SYMBOL_GPL(dwc3_host_wakeup_register);
 
 /* callback function */
 void dwc3_host_wakeup_capable(struct device *dev, bool wakeup)
