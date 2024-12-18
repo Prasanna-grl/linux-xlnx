@@ -912,6 +912,8 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 	ssize_t				retval;
 	enum ep0_state			state;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	spin_lock_irq (&dev->lock);
 	if (dev->state <= STATE_DEV_OPENED) {
 		retval = -EINVAL;
@@ -1188,6 +1190,8 @@ dev_release (struct inode *inode, struct file *fd)
 {
 	struct dev_data		*dev = fd->private_data;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/* closing ep0 === shutdown all */
 
 	if (dev->gadget_registered) {
@@ -1334,6 +1338,8 @@ gadgetfs_setup (struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 	struct usb_gadgetfs_event	*event;
 	u16				w_value = le16_to_cpu(ctrl->wValue);
 	u16				w_length = le16_to_cpu(ctrl->wLength);
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (w_length > RBUF_SIZE) {
 		if (ctrl->bRequestType & USB_DIR_IN) {
@@ -1665,6 +1671,8 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
 {
 	struct dev_data		*dev = the_device;
 
+	
+
 	if (!dev)
 		return -ESRCH;
 	if (0 != strcmp (CHIP, gadget->name)) {
@@ -1801,6 +1809,8 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
 	u32			tag;
 	char			*kbuf;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	spin_lock_irq(&dev->lock);
 	if (dev->state > STATE_DEV_OPENED) {
 		value = ep0_write(fd, buf, len, ptr);
@@ -1910,6 +1920,8 @@ gadget_dev_open (struct inode *inode, struct file *fd)
 {
 	struct dev_data		*dev = inode->i_private;
 	int			value = -EBUSY;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	spin_lock_irq(&dev->lock);
 	if (dev->state == STATE_DEV_DISABLED) {
@@ -2119,6 +2131,8 @@ MODULE_ALIAS_FS("gadgetfs");
 static int __init gadgetfs_init (void)
 {
 	int status;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	status = register_filesystem (&gadgetfs_type);
 	if (status == 0)

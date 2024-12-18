@@ -91,6 +91,8 @@ int dwc3_gadget_set_link_state(struct dwc3 *dwc, enum dwc3_link_state state)
 	int		retries = 10000;
 	u32		reg;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/*
 	 * Wait until device controller is ready. Only applies to 1.94a and
 	 * later RTL.
@@ -177,6 +179,8 @@ static void dwc3_gadget_del_and_unmap_request(struct dwc3_ep *dep,
 {
 	struct dwc3			*dwc = dep->dwc;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	list_del(&req->list);
 	req->remaining = 0;
 	req->needs_extra_trb = false;
@@ -210,6 +214,8 @@ void dwc3_gadget_giveback(struct dwc3_ep *dep, struct dwc3_request *req,
 {
 	struct dwc3			*dwc = dep->dwc;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	dwc3_gadget_del_and_unmap_request(dep, req, status);
 	req->status = DWC3_REQUEST_STATUS_COMPLETED;
 
@@ -234,6 +240,8 @@ int dwc3_send_gadget_generic_command(struct dwc3 *dwc, unsigned int cmd,
 	int		status = 0;
 	int		ret = 0;
 	u32		reg;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	dwc3_writel(dwc->regs, DWC3_DGCMDPAR, param);
 	dwc3_writel(dwc->regs, DWC3_DGCMD, cmd | DWC3_DGCMD_CMDACT);
@@ -280,6 +288,8 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep, unsigned int cmd,
 
 	int			cmd_status = 0;
 	int			ret = -EINVAL;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	/*
 	 * When operating in USB 2.0 speeds (HS/FS), if GUSB2PHYCFG.ENBLSLPM or
@@ -441,6 +451,8 @@ static int dwc3_send_clear_stall_ep_cmd(struct dwc3_ep *dep)
 	struct dwc3_gadget_ep_cmd_params params;
 	u32 cmd = DWC3_DEPCMD_CLEARSTALL;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/*
 	 * As of core revision 2.60a the recommended programming model
 	 * is to set the ClearPendIN bit when issuing a Clear Stall EP
@@ -501,6 +513,8 @@ static int dwc3_gadget_set_xfer_resource(struct dwc3_ep *dep)
 {
 	struct dwc3_gadget_ep_cmd_params params;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	memset(&params, 0x00, sizeof(params));
 
 	params.param0 = DWC3_DEPXFERCFG_NUM_XFER_RES(1);
@@ -550,6 +564,8 @@ static int dwc3_gadget_start_config(struct dwc3_ep *dep)
 	int			i;
 	int			ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (dep->number)
 		return 0;
 
@@ -581,6 +597,8 @@ static int dwc3_gadget_set_ep_config(struct dwc3_ep *dep, unsigned int action)
 	const struct usb_endpoint_descriptor *desc;
 	struct dwc3_gadget_ep_cmd_params params;
 	struct dwc3 *dwc = dep->dwc;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	comp_desc = dep->endpoint.comp_desc;
 	desc = dep->endpoint.desc;
@@ -683,6 +701,8 @@ static int dwc3_gadget_calc_tx_fifo_size(struct dwc3 *dwc, int mult)
 	int fifo_size;
 	int mdwidth;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	mdwidth = dwc3_mdwidth(dwc);
 
 	/* MDWIDTH is represented in bits, we need it in bytes */
@@ -708,6 +728,8 @@ void dwc3_gadget_clear_tx_fifos(struct dwc3 *dwc)
 	int fifo_depth;
 	int size;
 	int num;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!dwc->do_fifo_resize)
 		return;
@@ -769,6 +791,8 @@ static int dwc3_gadget_resize_tx_fifos(struct dwc3_ep *dep)
 	int num_fifos = 1;
 	int fifo;
 	int tmp;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!dwc->do_fifo_resize)
 		return 0;
@@ -863,6 +887,8 @@ int __dwc3_gadget_ep_enable(struct dwc3_ep *dep, unsigned int action)
 
 	u32			reg;
 	int			ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!(dep->flags & DWC3_EP_ENABLED) || dwc->is_hibernated) {
 		ret = dwc3_gadget_resize_tx_fifos(dep);
@@ -3247,6 +3273,8 @@ static int dwc3_gadget_init_endpoints(struct dwc3 *dwc, u8 total)
 {
 	u8				epnum;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	INIT_LIST_HEAD(&dwc->gadget->ep_list);
 
 	for (epnum = 0; epnum < total; epnum++) {
@@ -4619,6 +4647,8 @@ int dwc3_gadget_init(struct dwc3 *dwc)
 	int irq;
 	struct device *dev;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	irq = dwc3_gadget_get_irq(dwc);
 	if (irq < 0) {
 		ret = irq;
@@ -4773,6 +4803,8 @@ void dwc3_gadget_exit(struct dwc3 *dwc)
 	if (!dwc->gadget)
 		return;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	usb_del_gadget(dwc->gadget);
 	dwc3_gadget_free_endpoints(dwc);
 	usb_put_gadget(dwc->gadget);
@@ -4787,6 +4819,8 @@ int dwc3_gadget_suspend(struct dwc3 *dwc)
 {
 	unsigned long flags;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!dwc->gadget_driver)
 		return 0;
@@ -4817,6 +4851,8 @@ int dwc3_gadget_resume(struct dwc3 *dwc)
 {
 	int			ret, reg;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (!dwc->gadget_driver || !dwc->softconnect)
 		return 0;
 
@@ -4839,6 +4875,8 @@ int dwc3_gadget_resume(struct dwc3 *dwc)
 
 void dwc3_gadget_process_pending_events(struct dwc3 *dwc)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (dwc->pending_events) {
 		dwc3_interrupt(dwc->irq_gadget, dwc->ev_buf);
 		dwc->pending_events = false;
