@@ -1597,6 +1597,8 @@ static int activate_ep_files (struct dev_data *dev)
 	struct usb_ep	*ep;
 	struct ep_data	*data;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	gadget_for_each_ep (ep, dev->gadget) {
 
 		data = kzalloc(sizeof(*data), GFP_KERNEL);
@@ -1671,7 +1673,7 @@ static int gadgetfs_bind(struct usb_gadget *gadget,
 {
 	struct dev_data		*dev = the_device;
 
-	
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!dev)
 		return -ESRCH;
@@ -1713,6 +1715,8 @@ gadgetfs_disconnect (struct usb_gadget *gadget)
 	struct dev_data		*dev = get_gadget_data (gadget);
 	unsigned long		flags;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	spin_lock_irqsave (&dev->lock, flags);
 	if (dev->state == STATE_DEV_UNCONNECTED)
 		goto exit;
@@ -1730,6 +1734,8 @@ gadgetfs_suspend (struct usb_gadget *gadget)
 {
 	struct dev_data		*dev = get_gadget_data (gadget);
 	unsigned long		flags;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	INFO (dev, "suspended from state %d\n", dev->state);
 	spin_lock_irqsave(&dev->lock, flags);
@@ -1790,6 +1796,8 @@ static struct usb_gadget_driver gadgetfs_driver = {
 static int is_valid_config(struct usb_config_descriptor *config,
 		unsigned int total)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	return config->bDescriptorType == USB_DT_CONFIG
 		&& config->bLength == USB_DT_CONFIG_SIZE
 		&& total >= USB_DT_CONFIG_SIZE
@@ -1974,6 +1982,8 @@ gadgetfs_make_inode (struct super_block *sb,
 		void *data, const struct file_operations *fops,
 		int mode)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct inode *inode = new_inode (sb);
 
 	if (inode) {
@@ -1998,6 +2008,8 @@ gadgetfs_create_file (struct super_block *sb, char const *name,
 {
 	struct dentry	*dentry;
 	struct inode	*inode;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	dentry = d_alloc_name(sb->s_root, name);
 	if (!dentry)
@@ -2024,6 +2036,8 @@ gadgetfs_fill_super (struct super_block *sb, struct fs_context *fc)
 	struct inode	*inode;
 	struct dev_data	*dev;
 	int		rc;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	mutex_lock(&sb_mutex);
 

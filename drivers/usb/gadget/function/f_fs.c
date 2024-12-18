@@ -268,6 +268,8 @@ static char *ffs_prepare_buffer(const char __user *buf, size_t len)
 
 static void ffs_ep0_complete(struct usb_ep *ep, struct usb_request *req)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct ffs_data *ffs = req->context;
 
 	complete(&ffs->ep0req_completion);
@@ -278,6 +280,8 @@ static int __ffs_ep0_queue_wait(struct ffs_data *ffs, char *data, size_t len)
 {
 	struct usb_request *req = ffs->ep0req;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!req) {
 		spin_unlock_irq(&ffs->ev.waitq.lock);
@@ -317,6 +321,8 @@ static int __ffs_ep0_queue_wait(struct ffs_data *ffs, char *data, size_t len)
 
 static int __ffs_ep0_stall(struct ffs_data *ffs)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (ffs->ev.can_stall) {
 		pr_vdebug("ep0 stall\n");
 		usb_ep_set_halt(ffs->gadget->ep0);
@@ -334,6 +340,8 @@ static ssize_t ffs_ep0_write(struct file *file, const char __user *buf,
 	struct ffs_data *ffs = file->private_data;
 	ssize_t ret;
 	char *data;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -474,6 +482,7 @@ static ssize_t __ffs_ep0_read_events(struct ffs_data *ffs, char __user *buf,
 				     size_t n)
 	__releases(&ffs->ev.waitq.lock)
 {
+	printk("GRL : %s \n", __FUNCTION__);
 	/*
 	 * n cannot be bigger than ffs->ev.count, which cannot be bigger than
 	 * size of ffs->ev.types array (which is four) so that's how much space
@@ -511,6 +520,8 @@ static ssize_t ffs_ep0_read(struct file *file, char __user *buf,
 	char *data = NULL;
 	size_t n;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -612,6 +623,8 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
 {
 	struct ffs_data *ffs = inode->i_private;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (ffs->state == FFS_CLOSING)
@@ -627,6 +640,8 @@ static int ffs_ep0_release(struct inode *inode, struct file *file)
 {
 	struct ffs_data *ffs = file->private_data;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	ffs_data_closed(ffs);
@@ -639,6 +654,8 @@ static long ffs_ep0_ioctl(struct file *file, unsigned code, unsigned long value)
 	struct ffs_data *ffs = file->private_data;
 	struct usb_gadget *gadget = ffs->gadget;
 	long ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -659,6 +676,8 @@ static __poll_t ffs_ep0_poll(struct file *file, poll_table *wait)
 	struct ffs_data *ffs = file->private_data;
 	__poll_t mask = EPOLLWRNORM;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	poll_wait(file, &ffs->ev.waitq, wait);
 
@@ -956,6 +975,8 @@ static ssize_t ffs_epfile_io(struct file *file, struct ffs_io_data *io_data)
 	ssize_t ret, data_len = -EINVAL;
 	int halt;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/* Are we still active? */
 	if (WARN_ON(epfile->ffs->state != FFS_ACTIVE))
 		return -ENODEV;
@@ -1161,6 +1182,8 @@ ffs_epfile_open(struct inode *inode, struct file *file)
 {
 	struct ffs_epfile *epfile = inode->i_private;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (WARN_ON(epfile->ffs->state != FFS_ACTIVE))
@@ -1198,6 +1221,8 @@ static ssize_t ffs_epfile_write_iter(struct kiocb *kiocb, struct iov_iter *from)
 	struct ffs_io_data io_data, *p = &io_data;
 	ssize_t res;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (!is_sync_kiocb(kiocb)) {
@@ -1234,6 +1259,8 @@ static ssize_t ffs_epfile_read_iter(struct kiocb *kiocb, struct iov_iter *to)
 {
 	struct ffs_io_data io_data, *p = &io_data;
 	ssize_t res;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -1298,6 +1325,8 @@ static long ffs_epfile_ioctl(struct file *file, unsigned code,
 	struct ffs_epfile *epfile = file->private_data;
 	struct ffs_ep *ep;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -1432,6 +1461,8 @@ static struct dentry *ffs_sb_create_file(struct super_block *sb,
 	struct dentry	*dentry;
 	struct inode	*inode;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	dentry = d_alloc_name(sb->s_root, name);
@@ -1467,6 +1498,8 @@ static int ffs_sb_fill(struct super_block *sb, struct fs_context *fc)
 	struct ffs_sb_fill_data *data = fc->fs_private;
 	struct inode	*inode;
 	struct ffs_data	*ffs = data->ffs_data;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -1663,6 +1696,8 @@ static int functionfs_init(void)
 {
 	int ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	ret = register_filesystem(&ffs_fs_type);
@@ -1677,6 +1712,8 @@ static int functionfs_init(void)
 static void functionfs_cleanup(void)
 {
 	ENTER();
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	pr_info("unloading\n");
 	unregister_filesystem(&ffs_fs_type);
@@ -1697,6 +1734,8 @@ static void ffs_data_get(struct ffs_data *ffs)
 
 static void ffs_data_opened(struct ffs_data *ffs)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	refcount_inc(&ffs->ref);
@@ -1709,6 +1748,8 @@ static void ffs_data_opened(struct ffs_data *ffs)
 
 static void ffs_data_put(struct ffs_data *ffs)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (refcount_dec_and_test(&ffs->ref)) {
@@ -1728,6 +1769,8 @@ static void ffs_data_closed(struct ffs_data *ffs)
 {
 	struct ffs_epfile *epfiles;
 	unsigned long flags;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -1861,6 +1904,8 @@ static int functionfs_bind(struct ffs_data *ffs, struct usb_composite_dev *cdev)
 	struct usb_gadget_strings **lang;
 	int first_id;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (WARN_ON(ffs->state != FFS_ACTIVE
@@ -1894,6 +1939,8 @@ static int functionfs_bind(struct ffs_data *ffs, struct usb_composite_dev *cdev)
 
 static void functionfs_unbind(struct ffs_data *ffs)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (!WARN_ON(!ffs->gadget)) {
@@ -1911,6 +1958,8 @@ static void functionfs_unbind(struct ffs_data *ffs)
 
 static int ffs_epfiles_create(struct ffs_data *ffs)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct ffs_epfile *epfile, *epfiles;
 	unsigned i, count;
 
@@ -1944,6 +1993,8 @@ static int ffs_epfiles_create(struct ffs_data *ffs)
 
 static void ffs_epfiles_destroy(struct ffs_epfile *epfiles, unsigned count)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct ffs_epfile *epfile = epfiles;
 
 	ENTER();
@@ -1966,6 +2017,8 @@ static void ffs_func_eps_disable(struct ffs_function *func)
 	struct ffs_epfile *epfile;
 	unsigned short count;
 	unsigned long flags;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
 	count = func->ffs->eps_count;
@@ -1994,6 +2047,8 @@ static int ffs_func_eps_enable(struct ffs_function *func)
 	unsigned short count;
 	unsigned long flags;
 	int ret = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
 	ffs = func->ffs;
@@ -2063,6 +2118,8 @@ static int __must_check ffs_do_single_desc(char *data, unsigned len,
 	struct usb_descriptor_header *_ds = (void *)data;
 	u8 length;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -2243,6 +2300,8 @@ static int __ffs_data_do_entity(enum ffs_entity_type type,
 	struct ffs_desc_helper *helper = priv;
 	struct usb_endpoint_descriptor *d;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	switch (type) {
@@ -2348,6 +2407,8 @@ static int __must_check ffs_do_os_descs(unsigned count,
 {
 	const unsigned _len = len;
 	unsigned long num = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -2490,6 +2551,8 @@ static int __ffs_data_got_descs(struct ffs_data *ffs,
 	int ret = -EINVAL, i;
 	struct ffs_desc_helper helper;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	if (get_unaligned_le32(data + 4) != len)
@@ -2621,6 +2684,8 @@ static int __ffs_data_got_strings(struct ffs_data *ffs,
 	struct usb_gadget_strings **stringtabs, *t;
 	const char *data = _data;
 	struct usb_string *s;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -2756,6 +2821,8 @@ static void __ffs_event_add(struct ffs_data *ffs,
 {
 	enum usb_functionfs_event_type rem_type1, rem_type2 = type;
 	int neg = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	/*
 	 * Abort any unhandled setup
@@ -2947,6 +3014,8 @@ static int __ffs_func_bind_do_nums(enum ffs_entity_type type, u8 *valuep,
 	unsigned idx;
 	u8 newValue;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	switch (type) {
 	default:
 	case FFS_DESCRIPTOR:
@@ -3000,6 +3069,8 @@ static int __ffs_func_bind_do_os_desc(enum ffs_os_desc_type type,
 {
 	struct ffs_function *func = priv;
 	u8 length = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	switch (type) {
 	case FFS_OS_DESC_EXT_COMPAT: {
@@ -3082,6 +3153,8 @@ static inline struct f_fs_opts *ffs_do_functionfs_bind(struct usb_function *f,
 	struct ffs_data *ffs_data;
 	int ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 
 	/*
@@ -3134,6 +3207,8 @@ static int _ffs_func_bind(struct usb_configuration *c,
 
 	int fs_len, hs_len, ss_len, ret, i;
 	struct ffs_ep *eps_ptr;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	/* Make it a single chunk, less management later on */
 	vla_group(d);
@@ -3293,6 +3368,8 @@ static int ffs_func_bind(struct usb_configuration *c,
 	struct ffs_function *func = ffs_func_from_usb(f);
 	int ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (IS_ERR(ffs_opts))
 		return PTR_ERR(ffs_opts);
 
@@ -3319,6 +3396,8 @@ static int ffs_func_set_alt(struct usb_function *f,
 	struct ffs_function *func = ffs_func_from_usb(f);
 	struct ffs_data *ffs = func->ffs;
 	int ret = 0, intf;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (alt != (unsigned)-1) {
 		intf = ffs_func_revmap_intf(func, interface);
@@ -3364,6 +3443,8 @@ static int ffs_func_setup(struct usb_function *f,
 	struct ffs_data *ffs = func->ffs;
 	unsigned long flags;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 
@@ -3482,6 +3563,8 @@ static struct ffs_dev *_ffs_do_find_dev(const char *name)
 {
 	struct ffs_dev *dev;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (!name)
 		return NULL;
 
@@ -3500,6 +3583,8 @@ static struct ffs_dev *_ffs_get_single_dev(void)
 {
 	struct ffs_dev *dev;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (list_is_singular(&ffs_devices)) {
 		dev = list_first_entry(&ffs_devices, struct ffs_dev, entry);
 		if (dev->single)
@@ -3515,6 +3600,8 @@ static struct ffs_dev *_ffs_get_single_dev(void)
 static struct ffs_dev *_ffs_find_dev(const char *name)
 {
 	struct ffs_dev *dev;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	dev = _ffs_get_single_dev();
 	if (dev)
@@ -3553,6 +3640,8 @@ static const struct config_item_type ffs_func_type = {
 static void ffs_free_inst(struct usb_function_instance *f)
 {
 	struct f_fs_opts *opts;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	opts = to_f_fs_opts(f);
 	ffs_release_dev(opts->dev);
@@ -3610,6 +3699,8 @@ static void ffs_func_unbind(struct usb_configuration *c,
 	struct ffs_ep *ep = func->eps;
 	unsigned count = ffs->eps_count;
 	unsigned long flags;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 	if (ffs->func == func) {
@@ -3741,6 +3832,8 @@ EXPORT_SYMBOL_GPL(ffs_single_dev);
  */
 static void _ffs_free_dev(struct ffs_dev *dev)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	list_del(&dev->entry);
 
 	kfree(dev);
@@ -3752,6 +3845,8 @@ static int ffs_acquire_dev(const char *dev_name, struct ffs_data *ffs_data)
 {
 	int ret = 0;
 	struct ffs_dev *ffs_dev;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 	ffs_dev_lock();
@@ -3776,6 +3871,8 @@ static int ffs_acquire_dev(const char *dev_name, struct ffs_data *ffs_data)
 
 static void ffs_release_dev(struct ffs_dev *ffs_dev)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ENTER();
 	ffs_dev_lock();
 
@@ -3797,6 +3894,8 @@ static int ffs_ready(struct ffs_data *ffs)
 {
 	struct ffs_dev *ffs_obj;
 	int ret = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 	ffs_dev_lock();
@@ -3830,6 +3929,8 @@ static void ffs_closed(struct ffs_data *ffs)
 	struct ffs_dev *ffs_obj;
 	struct f_fs_opts *opts;
 	struct config_item *ci;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	ENTER();
 	ffs_dev_lock();
@@ -3875,6 +3976,8 @@ static int ffs_mutex_lock(struct mutex *mutex, unsigned nonblock)
 static char *ffs_prepare_buffer(const char __user *buf, size_t len)
 {
 	char *data;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (!len)
 		return NULL;

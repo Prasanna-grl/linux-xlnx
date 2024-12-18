@@ -37,6 +37,8 @@ static void dwc3_ep0_prepare_one_trb(struct dwc3_ep *dep,
 	struct dwc3_trb			*trb;
 	struct dwc3			*dwc;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	dwc = dep->dwc;
 	trb = &dwc->ep0_trb[dep->trb_enqueue];
 
@@ -66,6 +68,8 @@ static int dwc3_ep0_start_trans(struct dwc3_ep *dep)
 	struct dwc3			*dwc;
 	int				ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (dep->flags & DWC3_EP_TRANSFER_STARTED)
 		return 0;
 
@@ -88,6 +92,8 @@ static int __dwc3_gadget_ep0_queue(struct dwc3_ep *dep,
 		struct dwc3_request *req)
 {
 	struct dwc3		*dwc = dep->dwc;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	req->request.actual	= 0;
 	req->request.status	= -EINPROGRESS;
@@ -192,6 +198,8 @@ int dwc3_gadget_ep0_queue(struct usb_ep *ep, struct usb_request *request,
 	struct dwc3_ep			*dep = to_dwc3_ep(ep);
 	struct dwc3			*dwc = dep->dwc;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	unsigned long			flags;
 
 	int				ret;
@@ -222,6 +230,8 @@ void dwc3_ep0_stall_and_restart(struct dwc3 *dwc)
 {
 	struct dwc3_ep		*dep;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/* reinitialize physical ep1 */
 	dep = dwc->eps[1];
 	dep->flags = DWC3_EP_ENABLED;
@@ -250,6 +260,8 @@ int __dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value)
 	struct dwc3_ep			*dep = to_dwc3_ep(ep);
 	struct dwc3			*dwc = dep->dwc;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	dwc3_ep0_stall_and_restart(dwc);
 
 	return 0;
@@ -262,6 +274,8 @@ int dwc3_gadget_ep0_set_halt(struct usb_ep *ep, int value)
 	unsigned long			flags;
 	int				ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	spin_lock_irqsave(&dwc->lock, flags);
 	ret = __dwc3_gadget_ep0_set_halt(ep, value);
 	spin_unlock_irqrestore(&dwc->lock, flags);
@@ -273,6 +287,8 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
 {
 	struct dwc3_ep			*dep;
 	int				ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	complete(&dwc->ep0_in_setup);
 
@@ -288,6 +304,8 @@ static struct dwc3_ep *dwc3_wIndex_to_dep(struct dwc3 *dwc, __le16 wIndex_le)
 	struct dwc3_ep		*dep;
 	u32			windex = le16_to_cpu(wIndex_le);
 	u32			epnum;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	epnum = (windex & USB_ENDPOINT_NUMBER_MASK) << 1;
 	if ((windex & USB_ENDPOINT_DIR_MASK) == USB_DIR_IN)
@@ -318,6 +336,8 @@ static int dwc3_ep0_handle_status(struct dwc3 *dwc,
 	u32			reg;
 	u16			usb_status = 0;
 	__le16			*response_pkt;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	/* We don't support PTM_STATUS */
 	value = le16_to_cpu(ctrl->wValue);
@@ -384,6 +404,8 @@ static int dwc3_ep0_handle_u1(struct dwc3 *dwc, enum usb_device_state state,
 {
 	u32 reg;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (state != USB_STATE_CONFIGURED)
 		return -EINVAL;
 	if ((dwc->speed != DWC3_DSTS_SUPERSPEED) &&
@@ -407,6 +429,7 @@ static int dwc3_ep0_handle_u2(struct dwc3 *dwc, enum usb_device_state state,
 {
 	u32 reg;
 
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (state != USB_STATE_CONFIGURED)
 		return -EINVAL;
@@ -457,6 +480,8 @@ static int dwc3_ep0_handle_device(struct dwc3 *dwc,
 	u32			wValue;
 	u32			wIndex;
 	int			ret = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	wValue = le16_to_cpu(ctrl->wValue);
 	wIndex = le16_to_cpu(ctrl->wIndex);
@@ -527,6 +552,8 @@ static int dwc3_ep0_handle_intf(struct dwc3 *dwc,
 	u32			wValue;
 	int			ret = 0;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	wValue = le16_to_cpu(ctrl->wValue);
 
 	switch (wValue) {
@@ -552,6 +579,8 @@ static int dwc3_ep0_handle_endpoint(struct dwc3 *dwc,
 	struct dwc3_ep		*dep;
 	u32			wValue;
 	int			ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	wValue = le16_to_cpu(ctrl->wValue);
 
@@ -586,6 +615,8 @@ static int dwc3_ep0_handle_feature(struct dwc3 *dwc,
 	u32			recip;
 	int			ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	recip = ctrl->bRequestType & USB_RECIP_MASK;
 
 	switch (recip) {
@@ -610,6 +641,8 @@ static int dwc3_ep0_set_address(struct dwc3 *dwc, struct usb_ctrlrequest *ctrl)
 	enum usb_device_state state = dwc->gadget->state;
 	u32 addr;
 	u32 reg;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	addr = le16_to_cpu(ctrl->wValue);
 	if (addr > 127) {
@@ -639,6 +672,8 @@ static int dwc3_ep0_delegate_req(struct dwc3 *dwc, struct usb_ctrlrequest *ctrl)
 {
 	int ret = -EINVAL;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (dwc->async_callbacks) {
 		spin_unlock(&dwc->lock);
 		ret = dwc->gadget_driver->setup(dwc->gadget, ctrl);
@@ -653,6 +688,8 @@ static int dwc3_ep0_set_config(struct dwc3 *dwc, struct usb_ctrlrequest *ctrl)
 	u32 cfg;
 	int ret;
 	u32 reg;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	cfg = le16_to_cpu(ctrl->wValue);
 
@@ -710,6 +747,8 @@ static void dwc3_ep0_set_sel_cmpl(struct usb_ep *ep, struct usb_request *req)
 	u32		param = 0;
 	u32		reg;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct timing {
 		u8	u1sel;
 		u8	u1pel;
@@ -752,6 +791,8 @@ static int dwc3_ep0_set_sel(struct dwc3 *dwc, struct usb_ctrlrequest *ctrl)
 	enum usb_device_state state = dwc->gadget->state;
 	u16		wLength;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (state == USB_STATE_DEFAULT)
 		return -EINVAL;
 
@@ -786,6 +827,8 @@ static int dwc3_ep0_set_isoch_delay(struct dwc3 *dwc, struct usb_ctrlrequest *ct
 	u16		wValue;
 	u16		wIndex;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	wValue = le16_to_cpu(ctrl->wValue);
 	wLength = le16_to_cpu(ctrl->wLength);
 	wIndex = le16_to_cpu(ctrl->wIndex);
@@ -801,6 +844,8 @@ static int dwc3_ep0_set_isoch_delay(struct dwc3 *dwc, struct usb_ctrlrequest *ct
 static int dwc3_ep0_std_request(struct dwc3 *dwc, struct usb_ctrlrequest *ctrl)
 {
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	switch (ctrl->bRequest) {
 	case USB_REQ_GET_STATUS:
@@ -842,6 +887,8 @@ static void dwc3_ep0_inspect_setup(struct dwc3 *dwc,
 	int ret = -EINVAL;
 	u32 len;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (!dwc->gadget_driver || !dwc->connected)
 		goto out;
 
@@ -882,6 +929,8 @@ static void dwc3_ep0_complete_data(struct dwc3 *dwc,
 	u32			status;
 	u32			length;
 	u8			epnum;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	epnum = event->endpoint_number;
 	ep0 = dwc->eps[0];
@@ -937,6 +986,8 @@ static void dwc3_ep0_complete_status(struct dwc3 *dwc,
 	struct dwc3_trb		*trb;
 	u32			status;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	dep = dwc->eps[0];
 	trb = dwc->ep0_trb;
 
@@ -971,6 +1022,8 @@ static void dwc3_ep0_complete_status(struct dwc3 *dwc,
 static void dwc3_ep0_xfer_complete(struct dwc3 *dwc,
 			const struct dwc3_event_depevt *event)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct dwc3_ep		*dep = dwc->eps[event->endpoint_number];
 
 	dep->flags &= ~DWC3_EP_TRANSFER_STARTED;
@@ -999,6 +1052,8 @@ static void __dwc3_ep0_do_control_data(struct dwc3 *dwc,
 {
 	unsigned int		trb_length = 0;
 	int			ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	req->direction = !!dep->number;
 
@@ -1084,6 +1139,8 @@ static int dwc3_ep0_start_control_status(struct dwc3_ep *dep)
 	struct dwc3		*dwc = dep->dwc;
 	u32			type;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	type = dwc->three_stage_setup ? DWC3_TRBCTL_CONTROL_STATUS3
 		: DWC3_TRBCTL_CONTROL_STATUS2;
 
@@ -1143,6 +1200,8 @@ void dwc3_ep0_end_control_data(struct dwc3 *dwc, struct dwc3_ep *dep)
 static void dwc3_ep0_xfernotready(struct dwc3 *dwc,
 		const struct dwc3_event_depevt *event)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	switch (event->status) {
 	case DEPEVT_STATUS_CONTROL_DATA:
 		/*
@@ -1202,6 +1261,8 @@ static void dwc3_ep0_xfernotready(struct dwc3 *dwc,
 void dwc3_ep0_interrupt(struct dwc3 *dwc,
 		const struct dwc3_event_depevt *event)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+	
 	struct dwc3_ep	*dep = dwc->eps[event->endpoint_number];
 	u8		cmd;
 

@@ -99,6 +99,8 @@ static enum usb_dr_mode usb_get_dr_mode_from_string(const char *str)
 {
 	int ret;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	ret = match_string(usb_dr_modes, ARRAY_SIZE(usb_dr_modes), str);
 	return (ret < 0) ? USB_DR_MODE_UNKNOWN : ret;
 }
@@ -117,6 +119,8 @@ static int dwc3_zynqmp_power_req(struct device *dev, bool on)
 	void __iomem *reg_base;
 	struct dwc3_xlnx *priv_data;
 	int ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	priv_data = dev_get_drvdata(dev);
 	reg_base = priv_data->regs;
@@ -286,6 +290,8 @@ static int dwc3_set_usb_core_power(struct device *dev, bool on)
 	int ret;
 	struct device_node *node = dev->of_node;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	if (of_device_is_compatible(node, "xlnx,zynqmp-dwc3"))
 		/* Set D3/D0 state for ZynqMP */
 		ret = dwc3_zynqmp_power_req(dev, on);
@@ -301,16 +307,22 @@ static int dwc3_set_usb_core_power(struct device *dev, bool on)
 
 static int dwc3_xlnx_reg_enable(struct regulator_dev *rdev)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	return dwc3_set_usb_core_power(rdev->dev.parent, true);
 }
 
 static int dwc3_xlnx_reg_disable(struct regulator_dev *rdev)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	return dwc3_set_usb_core_power(rdev->dev.parent, false);
 }
 
 static int dwc3_xlnx_reg_is_enabled(struct regulator_dev *rdev)
 {
+	printk("GRL : %s \n", __FUNCTION__);
+
 	struct dwc3_xlnx	*priv_data = dev_get_drvdata(rdev->dev.parent);
 
 	return !!(priv_data->pmu_state == D0_STATE);
@@ -327,6 +339,8 @@ static int dwc3_xlnx_register_regulator(struct device *dev,
 {
 	struct regulator_config config = { };
 	int ret = 0;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	config.dev = dev;
 	config.driver_data = (void *)priv_data;
@@ -356,6 +370,8 @@ static void dwc3_xlnx_mask_phy_rst(struct dwc3_xlnx *priv_data, bool mask)
 {
 	u32 reg;
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/*
 	 * Enable or disable ULPI PHY reset from USB Controller.
 	 * This does not actually reset the phy, but just controls
@@ -375,6 +391,8 @@ static int dwc3_xlnx_init_versal(struct dwc3_xlnx *priv_data)
 {
 	struct device		*dev = priv_data->dev;
 	int			ret;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	priv_data->crst = devm_reset_control_get_exclusive(dev, NULL);
 	if (IS_ERR(priv_data->crst))
@@ -411,6 +429,8 @@ static int dwc3_xlnx_init_zynqmp(struct dwc3_xlnx *priv_data)
 	struct gpio_desc	*reset_gpio;
 	int			ret = 0;
 	u32			reg;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	priv_data->usb3_phy = devm_phy_optional_get(dev, "usb3-phy");
 	if (IS_ERR(priv_data->usb3_phy)) {
@@ -548,6 +568,8 @@ static void dwc3_xilinx_wakeup_capable(struct device *dev, bool wakeup)
 {
 	struct device_node *node = of_node_get(dev->parent->of_node);
 
+	printk("GRL : %s \n", __FUNCTION__);
+
 	/* check for valid parent node */
 	while (node) {
 		if (of_device_is_compatible(node, "xlnx,zynqmp-dwc3") ||
@@ -580,6 +602,8 @@ static void dwc3_xilinx_wakeup_capable(struct device *dev, bool wakeup)
 static irqreturn_t dwc3_xlnx_resume_irq(int irq, void *data)
 {
 	struct dwc3_xlnx	*priv_data = data;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	if (priv_data->enable_d3_suspend) {
 		/*
@@ -652,7 +676,7 @@ static int dwc3_xlnx_probe(struct platform_device *pdev)
 	else
 		priv_data->dr_mode = usb_get_dr_mode_from_string(dr_modes);
 
-		pr_info("GRL : %s dr_mode = %d\n", __FUNCTION__, priv_data->dr_mode);
+	pr_info("GRL : %s dr_mode = %d\n", __FUNCTION__, priv_data->dr_mode);
 
 	/* get the IRQ from the dwc3-xilinx core */
 	if (of_device_is_compatible(np, "xlnx,versal-dwc3") &&
@@ -737,6 +761,8 @@ static int dwc3_xlnx_remove(struct platform_device *pdev)
 {
 	struct dwc3_xlnx	*priv_data = platform_get_drvdata(pdev);
 	struct device		*dev = &pdev->dev;
+
+	printk("GRL : %s \n", __FUNCTION__);
 
 	of_platform_depopulate(dev);
 
